@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Political Influencer Registration</title>
+    <link rel="stylesheet" href="css/styles.css?v=19">
+</head>
+<body>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<div id="validation-errors" class="validation-errors hidden no-print" role="alert"></div>
+
+<div class="toolbar no-print">
+    <button type="button" class="btn btn-secondary" id="btn-import">Import CSV / Excel</button>
+    <a class="btn btn-secondary" href="/api/template" id="btn-template" download>Download Template</a>
+    <input type="file" id="import-file" accept=".csv,.xlsx,.xlsm" hidden>
+    <div class="toolbar-spacer"></div>
+    <button type="button" class="btn btn-clear" id="btn-clear">Clear Form</button>
+    <button type="button" class="btn btn-secondary" id="btn-preview">Preview</button>
+    <button type="button" class="btn btn-warning" id="btn-save-exit">Save &amp; Exit</button>
+    <button type="button" class="btn btn-primary" id="btn-submit">Submit</button>
+</div>
+
+<div id="preview-banner" class="preview-banner hidden no-print" role="status">
+    <span class="preview-banner-text">Preview — your form will be submitted exactly as shown below (PDF + CSV)</span>
+    <div class="preview-banner-actions">
+        <button type="button" class="btn btn-clear" id="preview-clear">Clear Form</button>
+        <button type="button" class="btn btn-secondary" id="preview-exit">Back to Edit</button>
+        <button type="button" class="btn btn-secondary" id="preview-print">Print / Save PDF</button>
+        <button type="button" class="btn btn-primary" id="preview-submit">Confirm Submit</button>
+    </div>
+</div>
+
+<form id="registration-form" novalidate>
+<div class="form-container" id="form-container">
+    <div class="header">
+        <div class="logo-box">- LOGO -</div>
+        <div class="title-box">
+            <h1>Political Influencer Registration Form</h1>
+            <h3>MP Constituency Management System</h3>
+        </div>
+        <div class="logo-box">MP OFFICE</div>
+    </div>
+
+    <div class="section-header">PERSONAL DETAILS</div>
+    <div class="form-row" data-field-row="full_name">
+        <div class="row-label">FULL NAME <span class="required">*</span></div>
+        <div class="row-content">
+            <div class="char-grid" data-field="full_name" data-length="25" data-cols="25"></div>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="row-label">DOB / GENDER <span class="required">*</span></div>
+        <div class="row-content row-split">
+            <div class="field-box field-box-wide" data-field-row="date_of_birth">
+                <span class="field-label">DATE OF BIRTH <span class="required">*</span></span>
+                <div class="char-grid char-grid-date" data-field="date_of_birth" data-date-pattern="2-2-4" data-date-sep="/"></div>
+            </div>
+            <div class="field-box" data-field-row="gender">
+                <span class="field-label">GENDER <span class="required">*</span></span>
+                <div class="checkbox-grid checkbox-grid-inline" data-field="gender" data-type="checkbox-group">
+                    <label class="checkbox-item"><input type="checkbox" name="gender" value="Male"> Male</label>
+                    <label class="checkbox-item"><input type="checkbox" name="gender" value="Female"> Female</label>
+                    <label class="checkbox-item"><input type="checkbox" name="gender" value="Other"> Other</label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-row" data-field-row="occupation">
+        <div class="row-label">OCCUPATION <span class="required">*</span></div>
+        <div class="row-content">
+            <select class="gov-select" id="occupation" data-field="occupation">
+                <option value="">—</option>
+                <option value="Farmer">Farmer</option>
+                <option value="Businessman">Businessman</option>
+                <option value="Teacher">Teacher</option>
+                <option value="Doctor">Doctor</option>
+                <option value="Lawyer">Lawyer</option>
+                <option value="Government Employee">Government Employee</option>
+                <option value="Retired Government Employee">Retired Government Employee</option>
+                <option value="Contractor">Contractor</option>
+                <option value="Real Estate Professional">Real Estate Professional</option>
+                <option value="Journalist">Journalist</option>
+                <option value="Student Leader">Student Leader</option>
+                <option value="Religious Leader">Religious Leader</option>
+                <option value="NGO Worker">NGO Worker</option>
+                <option value="Social Worker">Social Worker</option>
+                <option value="Industrialist">Industrialist</option>
+                <option value="Self Employed">Self Employed</option>
+                <option value="Private Employee">Private Employee</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="row-label">RELIGION / CASTE <span class="required">*</span></div>
+        <div class="row-content row-split">
+            <div class="field-box" data-field-row="religion">
+                <span class="field-label">RELIGION <span class="required">*</span></span>
+                <div class="checkbox-grid checkbox-grid-inline" data-field="religion" data-type="checkbox-group">
+                    <label class="checkbox-item"><input type="checkbox" name="religion" value="Hindu"> Hindu</label>
+                    <label class="checkbox-item"><input type="checkbox" name="religion" value="Muslim"> Muslim</label>
+                    <label class="checkbox-item"><input type="checkbox" name="religion" value="Christian"> Christian</label>
+                    <label class="checkbox-item"><input type="checkbox" name="religion" value="Other"> Other</label>
+                </div>
+            </div>
+            <div class="field-box" data-field-row="caste_community">
+                <span class="field-label">CASTE / COMMUNITY <span class="required">*</span></span>
+                <select class="gov-select" id="caste-community" data-field="caste_community">
+                    <option value="">—</option>
+                    <option value="Brahmin">Brahmin</option>
+                    <option value="Kamma">Kamma</option>
+                    <option value="Kapu">Kapu</option>
+                    <option value="Reddy">Reddy</option>
+                    <option value="Velama">Velama</option>
+                    <option value="Rajaka (Chakali)">Rajaka (Chakali)</option>
+                    <option value="Vaddera">Vaddera</option>
+                    <option value="Yadava">Yadava</option>
+                    <option value="Kummari">Kummari</option>
+                    <option value="Mala (SC)">Mala (SC)</option>
+                    <option value="Madiga (SC)">Madiga (SC)</option>
+                    <option value="Relli (SC)">Relli (SC)</option>
+                    <option value="Adi Andhra (SC)">Adi Andhra (SC)</option>
+                    <option value="Other SC">Other SC</option>
+                    <option value="Scheduled Tribe">Scheduled Tribe</option>
+                    <option value="Other BC">Other BC</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-row" data-field-row="additional_identity">
+        <div class="row-label">ADDITIONAL IDENTITY</div>
+        <div class="row-content">
+            <div class="char-grid" data-field="additional_identity" data-length="25" data-cols="25"></div>
+        </div>
+    </div>
+
+    <div class="section-header">CONTACT DETAILS</div>
+    <div class="form-row">
+        <div class="row-label">MOBILE / WHATSAPP <span class="required">*</span></div>
+        <div class="row-content row-split">
+            <div class="field-box" data-field-row="mobile">
+                <span class="field-label">MOBILE NUMBER (PRIMARY) <span class="required">*</span></span>
+                <div class="char-grid" data-field="mobile" data-length="10" data-cols="10"></div>
+            </div>
+            <div class="field-box" data-field-row="whatsapp">
+                <span class="field-label">WHATSAPP NUMBER <span class="required">*</span></span>
+                <div class="char-grid" data-field="whatsapp" data-length="10" data-cols="10"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-header">CONSTITUENCY MAPPING</div>
+    <div class="form-row">
+        <div class="row-label">STATE / DISTRICT</div>
+        <div class="row-content row-split">
+            <div class="field-box" data-field-row="state">
+                <span class="field-label">STATE</span>
+                <select class="gov-select" id="state" data-field="state">
+                    <option value="">—</option>
+                </select>
+            </div>
+            <div class="field-box" data-field-row="district">
+                <span class="field-label">DISTRICT</span>
+                <select class="gov-select" id="district" data-field="district" disabled>
+                    <option value="">—</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="row-label">PARLIAMENT / ASSEMBLY</div>
+        <div class="row-content row-split">
+            <div class="field-box" data-field-row="parliament">
+                <span class="field-label">PARLIAMENT CONSTITUENCY</span>
+                <select class="gov-select" id="parliament" data-field="parliament" disabled>
+                    <option value="">—</option>
+                </select>
+            </div>
+            <div class="field-box" data-field-row="assembly">
+                <span class="field-label">ASSEMBLY CONSTITUENCY</span>
+                <select class="gov-select" id="assembly" data-field="assembly" disabled>
+                    <option value="">—</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="row-label">MANDAL / PANCHAYAT / VILLAGE <span class="required">*</span></div>
+        <div class="row-content row-split row-split-3">
+            <div class="field-box" data-field-row="mandal">
+                <span class="field-label">MANDAL</span>
+                <select class="gov-select" id="mandal" data-field="mandal" disabled>
+                    <option value="">—</option>
+                </select>
+            </div>
+            <div class="field-box" data-field-row="panchayat">
+                <span class="field-label">PANCHAYAT</span>
+                <select class="gov-select" id="panchayat" data-field="panchayat" disabled>
+                    <option value="">—</option>
+                </select>
+            </div>
+            <div class="field-box" data-field-row="village">
+                <span class="field-label">VILLAGE <span class="required">*</span></span>
+                <select class="gov-select" id="village" data-field="village" disabled>
+                    <option value="">—</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-header">POLITICAL &amp; INFLUENCE DETAILS</div>
+    <div class="form-row">
+        <div class="row-label">PARTY / FOLLOWER <span class="required">*</span></div>
+        <div class="row-content row-split">
+            <div class="field-box" data-field-row="party_affiliation">
+                <span class="field-label">PARTY AFFILIATION <span class="required">*</span></span>
+                <select class="gov-select" id="party-affiliation" data-field="party_affiliation">
+                    <option value="">—</option>
+                    <option value="TDP">TDP</option>
+                    <option value="YSRCP">YSRCP</option>
+                    <option value="BJP">BJP</option>
+                    <option value="Congress">Congress</option>
+                    <option value="Neutral">Neutral</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="field-box" data-field-row="krishna_sir_follower">
+                <span class="field-label">KRISHNA SIR FOLLOWER <span class="required">*</span></span>
+                <select class="gov-select" id="krishna-sir-follower" data-field="krishna_sir_follower">
+                    <option value="">—</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="row-label">ROLE / INFLUENCE <span class="required">*</span></div>
+        <div class="row-content row-split">
+            <div class="field-box" data-field-row="position_role">
+                <span class="field-label">POSITION / ROLE <span class="required">*</span></span>
+                <select class="gov-select" id="position-role" data-field="position_role">
+                    <option value="">—</option>
+                    <option value="Sarpanch">Sarpanch</option>
+                    <option value="MPTC">MPTC</option>
+                    <option value="ZPTC">ZPTC</option>
+                    <option value="Mandal President">Mandal President</option>
+                    <option value="Booth President">Booth President</option>
+                    <option value="Party Worker">Party Worker</option>
+                    <option value="Influencer">Influencer</option>
+                    <option value="Business Leader">Business Leader</option>
+                    <option value="Community Leader">Community Leader</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="field-box" data-field-row="area_of_influence">
+                <span class="field-label">AREA OF INFLUENCE <span class="required">*</span></span>
+                <select class="gov-select" id="area-of-influence" data-field="area_of_influence">
+                    <option value="">—</option>
+                    <option value="Village / Cluster of Villages">Village / Cluster of Villages</option>
+                    <option value="Mandal">Mandal</option>
+                    <option value="Multiple Mandals">Multiple Mandals</option>
+                    <option value="Constituency">Constituency</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-header">ADDITIONAL INFORMATION</div>
+    <div class="form-row" data-field-row="last_interaction_date">
+        <div class="row-label">LAST INTERACTION DATE</div>
+        <div class="row-content">
+            <div class="char-grid char-grid-date" data-field="last_interaction_date" data-date-pattern="2-2-4" data-date-sep="/"></div>
+        </div>
+    </div>
+    <div class="form-row form-row-lines" data-field-row="remarks_1">
+        <div class="row-label">REMARKS <span class="required">*</span></div>
+        <div class="row-content">
+            <div class="numbered-lines">
+                <div class="numbered-line"><span class="line-number">1.</span><input type="text" class="gov-line-input" data-field="remarks_1"></div>
+                <div class="numbered-line"><span class="line-number">2.</span><input type="text" class="gov-line-input" data-field="remarks_2"></div>
+                <div class="numbered-line"><span class="line-number">3.</span><input type="text" class="gov-line-input" data-field="remarks_3"></div>
+            </div>
+        </div>
+    </div>
+    <div class="form-row form-row-lines">
+        <div class="row-label">OPEN GRIEVANCES / REQUESTS</div>
+        <div class="row-content">
+            <div class="numbered-lines">
+                <div class="numbered-line"><span class="line-number">1.</span><input type="text" class="gov-line-input" data-field="grievances_1"></div>
+                <div class="numbered-line"><span class="line-number">2.</span><input type="text" class="gov-line-input" data-field="grievances_2"></div>
+                <div class="numbered-line"><span class="line-number">3.</span><input type="text" class="gov-line-input" data-field="grievances_3"></div>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="js/script.js?v=12"></script>
+</body>
+</html>
