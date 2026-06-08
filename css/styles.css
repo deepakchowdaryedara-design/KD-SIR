@@ -632,23 +632,44 @@ body.form-frozen .form-container textarea{
         border:0.35mm solid var(--blue);
         padding:0;
         line-height:1;
+        font-weight:normal;
     }
 
     .char-grid[data-cols] input{
         width:100%;
         height:7.5mm;
-        font-size:11pt;
-        font-weight:600;
+        font-size:9pt;
+        font-weight:normal;
+    }
+
+    .char-grid.char-grid-date{
+        display:flex;
+        flex-wrap:nowrap;
+        align-items:center;
+        gap:0.35mm;
+        width:auto !important;
+        max-width:100%;
     }
 
     .char-grid.char-grid-date input{
-        width:7.5mm;
+        width:7mm !important;
+        min-width:7mm !important;
+        max-width:7mm !important;
+        height:7.5mm !important;
+        font-size:9pt !important;
+        font-weight:normal !important;
+        flex-shrink:0;
+        border:0.35mm solid var(--blue);
+        padding:0;
+        line-height:1;
     }
 
     .char-grid-separator{
         height:7.5mm;
-        font-size:11pt;
-        padding:0 1mm;
+        font-size:9pt !important;
+        font-weight:normal !important;
+        padding:0 0.4mm;
+        flex-shrink:0;
     }
 
     .gov-select{
