@@ -66,6 +66,8 @@ REQUIRED_FIELDS = [
     "remarks_1",
 ]
 
+EXPORT_KEY = os.environ.get("EXPORT_KEY", "")
+
 app = Flask(__name__, static_folder=BASE_DIR, static_url_path="")
 
 
@@ -239,6 +241,56 @@ def download_template():
         as_attachment=True,
         download_name="registration_template.csv",
     )
+
+
+def check_export_key():
+    if not EXPORT_KEY:
+        return False, jsonify({
+            "success": False,
+            "errors": ["Export not configured. Set EXPORT_KEY in Render Environment."],
+        }), 503
+    key = request.args.get("key", "")
+    if key != EXPORT_KEY:
+        return False, jsonify({"success": False, "errors": ["Invalid export key."]}), 403
+    return True, None, None
+
+
+@app.route("/api/export/submissions")
+def export_submissions():
+    ok, response, status = check_export_key()
+    if not ok:
+        return response, status
+
+    ensure_csv()
+    if not os.path.isfile(CSV_PATH):
+        return jsonify({"success": False, "errors": ["No submissions yet."]}), 404
+
+    with open(CSV_PATH, "r", encoding="utf-8-sig") as f:
+        row_count = sum(1 for _ in f) - 1
+    if row_count < 1:
+        return jsonify({"success": False, "errors": ["No submissions yet."]}), 404
+
+    return send_file(
+        CSV_PATH,
+        mimetype="text/csv",
+        as_attachment=True,
+        download_name="submissions.csv",
+    )
+
+
+@app.route("/api/export/count")
+def export_count():
+    ok, response, status = check_export_key()
+    if not ok:
+        return response, status
+
+    ensure_csv()
+    if not os.path.isfile(CSV_PATH):
+        return jsonify({"count": 0})
+
+    with open(CSV_PATH, "r", encoding="utf-8-sig") as f:
+        rows = sum(1 for _ in f) - 1
+    return jsonify({"count": max(rows, 0), "csv_path": CSV_PATH})
 
 
 @app.route("/api/submit", methods=["POST"])
