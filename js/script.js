@@ -732,12 +732,6 @@ document.getElementById("btn-import").addEventListener("click", () => {
     document.getElementById("import-file").click();
 });
 
-document.getElementById("btn-export").addEventListener("click", () => {
-    const key = prompt("Enter export key to download all submissions (CSV):");
-    if (!key) return;
-    window.location.href = `/api/export/submissions?key=${encodeURIComponent(key)}`;
-});
-
 document.getElementById("import-file").addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (file) importFile(file);
