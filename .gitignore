@@ -4,4 +4,9 @@ __pycache__/
 .venv/
 venv/
 data/pdfs/*.pdf
+data/*.pdf
+data/submissions.csv
 *.log
+data/_ap_*.json
+data/_delimitation_schedule.txt
+data/_panchayat_cache/

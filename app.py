@@ -32,7 +32,6 @@ FIELD_COLUMNS = [
     "district",
     "parliament",
     "assembly",
-    "mandal",
     "village",
     "panchayat",
     "party_affiliation",
@@ -40,9 +39,6 @@ FIELD_COLUMNS = [
     "position_role",
     "area_of_influence",
     "last_interaction_date",
-    "remarks_1",
-    "remarks_2",
-    "remarks_3",
     "grievances_1",
     "grievances_2",
     "grievances_3",
@@ -63,7 +59,6 @@ REQUIRED_FIELDS = [
     "krishna_sir_follower",
     "position_role",
     "area_of_influence",
-    "remarks_1",
 ]
 
 EXPORT_KEY = os.environ.get("EXPORT_KEY", "")
@@ -144,7 +139,7 @@ def parse_csv_bytes(content):
     rows = list(reader)
     if not rows:
         return None, "CSV file has no data rows."
-    return rows[0], None
+    return rows, None
 
 
 def parse_excel_bytes(content):
@@ -152,12 +147,24 @@ def parse_excel_bytes(content):
         return None, "Excel support requires openpyxl. Run: pip install openpyxl"
     wb = load_workbook(io.BytesIO(content), read_only=True, data_only=True)
     ws = wb.active
-    rows = list(ws.iter_rows(values_only=True))
-    if len(rows) < 2:
+    sheet_rows = list(ws.iter_rows(values_only=True))
+    if len(sheet_rows) < 2:
         return None, "Excel file has no data rows."
-    headers = [normalize_header(str(h) if h is not None else "") for h in rows[0]]
-    values = rows[1]
-    return dict(zip(headers, [str(v).strip() if v is not None else "" for v in values])), None
+    headers = [normalize_header(str(h) if h is not None else "") for h in sheet_rows[0]]
+    rows = []
+    for values in sheet_rows[1:]:
+        if not values or all(v is None or str(v).strip() == "" for v in values):
+            continue
+        row = dict(
+            zip(
+                headers,
+                [str(v).strip() if v is not None else "" for v in values],
+            )
+        )
+        rows.append(row)
+    if not rows:
+        return None, "Excel file has no data rows."
+    return rows, None
 
 
 def map_import_row(raw):
@@ -176,6 +183,9 @@ def map_import_row(raw):
         "open_grievances_2": "grievances_2",
         "open_grievances_3": "grievances_3",
         "open_grievances_requests_1": "grievances_1",
+        "parliament_constituency": "parliament",
+        "lok_sabha": "parliament",
+        "assembly_constituency": "assembly",
     }
     for key, value in raw.items():
         norm = normalize_header(key)
@@ -208,6 +218,11 @@ def no_cache(response):
 @app.route("/")
 def index():
     return send_from_directory(BASE_DIR, "index.html")
+
+
+@app.route("/data/<path:filename>")
+def data_files(filename):
+    return send_from_directory(os.path.join(BASE_DIR, "data"), filename)
 
 
 @app.route("/css/<path:filename>")
@@ -345,9 +360,9 @@ def import_form():
     content = upload.read()
 
     if filename.endswith(".csv"):
-        raw, err = parse_csv_bytes(content)
+        raw_rows, err = parse_csv_bytes(content)
     elif filename.endswith((".xlsx", ".xlsm")):
-        raw, err = parse_excel_bytes(content)
+        raw_rows, err = parse_excel_bytes(content)
     elif filename.endswith(".xls"):
         return jsonify({
             "success": False,
@@ -362,14 +377,37 @@ def import_form():
     if err:
         return jsonify({"success": False, "errors": [err]}), 400
 
-    mapped = map_import_row(raw if isinstance(raw, dict) else {normalize_header(k): v for k, v in raw.items()})
-    if not mapped:
+    mapped_rows = []
+    row_warnings = []
+    for index, raw in enumerate(raw_rows, start=2):
+        row_dict = raw if isinstance(raw, dict) else {normalize_header(k): v for k, v in raw.items()}
+        if not any(str(v).strip() for v in row_dict.values()):
+            continue
+        mapped = map_import_row(row_dict)
+        if not mapped:
+            row_warnings.append(f"Row {index}: no matching columns — skipped.")
+            continue
+        if not (mapped.get("full_name") or "").strip():
+            row_warnings.append(f"Row {index}: missing full name — skipped.")
+            continue
+        if not (mapped.get("state") or "").strip():
+            mapped["state"] = "Andhra Pradesh"
+        mapped_rows.append(mapped)
+
+    if not mapped_rows:
         return jsonify({
             "success": False,
-            "errors": ["No matching columns found. Download the template and use those column headers."],
+            "errors": row_warnings or [
+                "No valid candidate rows found. Download the template and use those column headers."
+            ],
         }), 400
 
-    return jsonify({"success": True, "data": mapped})
+    return jsonify({
+        "success": True,
+        "rows": mapped_rows,
+        "count": len(mapped_rows),
+        "warnings": row_warnings,
+    })
 
 
 def find_free_port(preferred=8080):

@@ -5,35 +5,91 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>Political Influencer Registration</title>
-    <link rel="stylesheet" href="css/styles.css?v=20">
+    <link rel="stylesheet" href="css/styles.css?v=36">
 </head>
 <body>
 
-<div id="toast" class="toast" role="status" aria-live="polite"></div>
-<div id="validation-errors" class="validation-errors hidden no-print" role="alert"></div>
+<div id="toast" class="toast no-print" role="status" aria-live="polite"></div>
 
-<div class="toolbar no-print">
-    <button type="button" class="btn btn-secondary" id="btn-import">Import CSV / Excel</button>
-    <a class="btn btn-secondary" href="/api/template" id="btn-template" download>Download Template</a>
-    <input type="file" id="import-file" accept=".csv,.xlsx,.xlsm" hidden>
-    <div class="toolbar-spacer"></div>
-    <button type="button" class="btn btn-clear" id="btn-clear">Clear Form</button>
-    <button type="button" class="btn btn-secondary" id="btn-preview">Preview</button>
-    <button type="button" class="btn btn-warning" id="btn-save-exit">Save &amp; Exit</button>
-    <button type="button" class="btn btn-primary" id="btn-submit">Submit</button>
-</div>
+<div class="side-menu-backdrop no-print" id="side-menu-backdrop" hidden></div>
 
-<div id="preview-banner" class="preview-banner hidden no-print" role="status">
-    <span class="preview-banner-text">Preview — your form will be submitted exactly as shown below (PDF + CSV)</span>
-    <div class="preview-banner-actions">
-        <button type="button" class="btn btn-clear" id="preview-clear">Clear Form</button>
-        <button type="button" class="btn btn-secondary" id="preview-exit">Back to Edit</button>
-        <button type="button" class="btn btn-secondary" id="preview-print">Print / Save PDF</button>
-        <button type="button" class="btn btn-primary" id="preview-submit">Confirm Submit</button>
-    </div>
-</div>
+<div class="app-layout">
+    <aside class="side-menu no-print" id="side-menu" aria-label="Application menu">
+        <div class="side-menu-brand">
+            <span class="side-menu-eyebrow">MP Constituency Management System</span>
+            <h1 class="side-menu-title">Political Influencer Registration</h1>
+            <span class="side-menu-badge">MP OFFICE</span>
+        </div>
 
-<form id="registration-form" novalidate>
+        <nav class="side-menu-nav" aria-label="Form actions">
+            <div class="side-menu-section">
+                <span class="side-menu-section-label">Data</span>
+                <button type="button" class="side-menu-btn" id="btn-import">Import CSV / Excel</button>
+                <a class="side-menu-btn" href="/api/template" id="btn-template" download>Download Template</a>
+                <input type="file" id="import-file" accept=".csv,.xlsx,.xlsm" hidden>
+            </div>
+            <div class="side-menu-section">
+                <span class="side-menu-section-label">Form</span>
+                <button type="button" class="side-menu-btn side-menu-btn-danger" id="btn-clear">Clear Form</button>
+                <button type="button" class="side-menu-btn" id="btn-preview">Preview</button>
+                <button type="button" class="side-menu-btn" id="btn-save-exit">Save &amp; Exit</button>
+            </div>
+            <div class="side-menu-section side-menu-section-primary">
+                <button type="button" class="side-menu-btn side-menu-btn-primary" id="btn-submit">Submit Registration</button>
+            </div>
+        </nav>
+    </aside>
+
+    <main class="app-main">
+        <button type="button" class="side-menu-toggle no-print" id="side-menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="side-menu">
+            <span class="side-menu-toggle-icon" aria-hidden="true">☰</span>
+            <span>Menu</span>
+        </button>
+
+        <div class="app-main-chrome no-print">
+            <div id="validation-errors" class="validation-errors hidden" role="alert"></div>
+
+            <div id="import-banner" class="status-banner import-banner hidden" role="status">
+                <div class="status-banner-body">
+                    <span class="status-banner-kicker">Import Review</span>
+                    <span class="status-banner-text" id="import-banner-text">Candidate 1 of 5</span>
+                    <span class="status-banner-hint">Review and edit if needed, then Preview or Submit for this candidate.</span>
+                </div>
+                <div class="status-banner-actions">
+                    <button type="button" class="btn btn-secondary btn-sm" id="import-prev">Previous</button>
+                    <button type="button" class="btn btn-secondary btn-sm" id="import-next">Next</button>
+                    <button type="button" class="btn btn-secondary btn-sm" id="import-skip">Skip</button>
+                    <button type="button" class="btn btn-ghost-danger btn-sm" id="import-cancel">Cancel Import</button>
+                </div>
+            </div>
+
+            <div id="preview-banner" class="status-banner preview-banner hidden" role="status">
+                <div class="status-banner-body">
+                    <span class="status-banner-kicker">Preview Mode</span>
+                    <span class="status-banner-text">Your form will be submitted exactly as shown below (PDF + CSV).</span>
+                </div>
+                <div class="status-banner-actions">
+                    <button type="button" class="btn btn-ghost-danger btn-sm" id="preview-clear">Clear Form</button>
+                    <button type="button" class="btn btn-secondary btn-sm" id="preview-exit">Back to Edit</button>
+                    <button type="button" class="btn btn-secondary btn-sm" id="preview-print">Print / Save PDF</button>
+                    <button type="button" class="btn btn-primary btn-sm" id="preview-submit">Confirm Submit</button>
+                </div>
+            </div>
+
+            <div id="success-banner" class="status-banner success-banner hidden" role="status">
+                <div class="status-banner-body">
+                    <span class="status-banner-kicker">Submission Successful</span>
+                    <span class="status-banner-text" id="success-banner-text">Registration submitted successfully.</span>
+                    <span class="status-banner-hint">PDF and CSV have been saved. Use Print PDF to save a copy (same as Ctrl+P).</span>
+                </div>
+                <div class="status-banner-actions">
+                    <button type="button" class="btn btn-primary btn-sm" id="success-print">Print PDF</button>
+                    <button type="button" class="btn btn-secondary btn-sm" id="success-new">New Registration</button>
+                </div>
+            </div>
+        </div>
+
+        <form id="registration-form" novalidate>
 <div class="form-container" id="form-container">
     <div class="header">
         <div class="logo-box">- LOGO -</div>
@@ -189,14 +245,8 @@
         </div>
     </div>
     <div class="form-row">
-        <div class="row-label">MANDAL / PANCHAYAT / VILLAGE <span class="required">*</span></div>
-        <div class="row-content row-split row-split-3">
-            <div class="field-box" data-field-row="mandal">
-                <span class="field-label">MANDAL</span>
-                <select class="gov-select" id="mandal" data-field="mandal" disabled>
-                    <option value="">—</option>
-                </select>
-            </div>
+        <div class="row-label">PANCHAYAT / VILLAGE <span class="required">*</span></div>
+        <div class="row-content row-split">
             <div class="field-box" data-field-row="panchayat">
                 <span class="field-label">PANCHAYAT</span>
                 <select class="gov-select" id="panchayat" data-field="panchayat" disabled>
@@ -222,6 +272,7 @@
                     <option value="">—</option>
                     <option value="TDP">TDP</option>
                     <option value="YSRCP">YSRCP</option>
+                    <option value="Janasena">Janasena</option>
                     <option value="BJP">BJP</option>
                     <option value="Congress">Congress</option>
                     <option value="Neutral">Neutral</option>
@@ -277,16 +328,6 @@
             <div class="char-grid char-grid-date" data-field="last_interaction_date" data-date-pattern="2-2-4" data-date-sep="/"></div>
         </div>
     </div>
-    <div class="form-row form-row-lines" data-field-row="remarks_1">
-        <div class="row-label">REMARKS <span class="required">*</span></div>
-        <div class="row-content">
-            <div class="numbered-lines">
-                <div class="numbered-line"><span class="line-number">1.</span><input type="text" class="gov-line-input" data-field="remarks_1"></div>
-                <div class="numbered-line"><span class="line-number">2.</span><input type="text" class="gov-line-input" data-field="remarks_2"></div>
-                <div class="numbered-line"><span class="line-number">3.</span><input type="text" class="gov-line-input" data-field="remarks_3"></div>
-            </div>
-        </div>
-    </div>
     <div class="form-row form-row-lines">
         <div class="row-label">OPEN GRIEVANCES / REQUESTS</div>
         <div class="row-content">
@@ -298,9 +339,12 @@
         </div>
     </div>
 </div>
-</form>
+        </form>
+    </main>
+</div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<script src="js/script.js?v=14"></script>
+<script src="js/script.js?v=46"></script>
 </body>
 </html>
